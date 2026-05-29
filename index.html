@@ -496,8 +496,11 @@
   </a>
   <ul class="nav-links">
     <li><a href="#install">Install</a></li>
+    <li><a href="#downloads">Downloads</a></li>
     <li><a href="#keybindings">Keybindings</a></li>
     <li><a href="#status">Status</a></li>
+    <li><a href="#docs">Docs</a></li>
+    <li><a href="#support">Support</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="https://github.com/dustinkirkland/byobu" class="nav-cta">GitHub</a></li>
   </ul>
@@ -527,6 +530,21 @@
     </div>
   </div>
 </section>
+
+<!-- Demo -->
+<div style="background:var(--bg2); margin: 0; padding: 0;">
+<section id="demo">
+  <h2>See it in action</h2>
+  <p class="section-sub">A live demonstration of byobu's keybindings, status bar, and window management.</p>
+  <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:var(--radius);"
+      src="https://www.youtube.com/embed/NawuGmcvKus"
+      title="Byobu demonstration"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>
+</section>
+</div>
 
 <!-- Install -->
 <section id="install">
@@ -597,6 +615,69 @@
     Optionally <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg2);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">python-newt</code> for the configuration utility.
     Byobu works on most Linux, BSD, and macOS distributions.
   </p>
+</section>
+
+<!-- Downloads -->
+<section id="downloads">
+  <h2>Downloads</h2>
+  <p class="section-sub">Byobu is available in most major Linux and BSD package repositories. Use your system's package manager for the easiest install.</p>
+
+  <table style="width:100%;border-collapse:collapse;font-size:0.9rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <thead>
+      <tr style="border-bottom:2px solid var(--border);">
+        <th style="text-align:left;padding:0.65rem 1.25rem;color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;">Distribution</th>
+        <th style="text-align:left;padding:0.65rem 1.25rem;color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;">Install command</th>
+        <th style="text-align:left;padding:0.65rem 1.25rem;color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;">Package page</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Ubuntu</strong> / Debian</td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">sudo apt install byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://launchpad.net/ubuntu/+source/byobu">launchpad.net</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Fedora</strong> / RHEL</td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">sudo dnf install byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://packages.fedoraproject.org/pkgs/byobu/byobu/">packages.fedoraproject.org</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Arch Linux</strong></td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">pacman -S byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://aur.archlinux.org/packages/byobu">aur.archlinux.org</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Alpine Linux</strong></td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">apk add byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://pkgs.alpinelinux.org/packages?name=byobu">pkgs.alpinelinux.org</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Gentoo</strong></td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">emerge byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://packages.gentoo.org/packages/app-misc/byobu">packages.gentoo.org</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>openSUSE</strong></td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">sudo zypper install byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://software.opensuse.org/package/byobu">software.opensuse.org</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>Linux Mint</strong></td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">sudo apt install byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://community.linuxmint.com/software/view/byobu">community.linuxmint.com</a></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:0.65rem 1.25rem;"><strong>macOS</strong> (Homebrew)</td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">brew install byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://formulae.brew.sh/formula/byobu">formulae.brew.sh</a></td>
+      </tr>
+      <tr>
+        <td style="padding:0.65rem 1.25rem;"><strong>Wolfi</strong> / Chainguard OS</td>
+        <td style="padding:0.65rem 1.25rem;font-family:var(--mono);font-size:0.82rem;color:var(--accent);">apk add byobu</td>
+        <td style="padding:0.65rem 1.25rem;"><a href="https://github.com/wolfi-dev/os/blob/main/byobu.yaml">github.com/wolfi-dev</a></td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <!-- How it works -->
@@ -953,6 +1034,62 @@
   </p>
 </section>
 </div>
+
+<!-- Documentation -->
+<div style="background:var(--bg2); margin: 0; padding: 0;">
+<section id="docs">
+  <h2>Documentation</h2>
+  <p class="section-sub">Manual pages for all byobu commands, hosted on <a href="https://manpages.ubuntu.com">manpages.ubuntu.com</a>.</p>
+
+  <div class="status-grid">
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu.1.html">byobu</a></h4><p>Launch or attach to a byobu session.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-config.1.html">byobu-config</a></h4><p>Interactive configuration menu (also opened by F9).</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-ctrl-a.1.html">byobu-ctrl-a</a></h4><p>Configure Ctrl-a behavior: byobu, screen, or shell.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-enable.1.html">byobu-enable</a></h4><p>Enable byobu to launch automatically at login.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-disable.1.html">byobu-disable</a></h4><p>Disable byobu auto-launch at login.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-export.1.html">byobu-export</a></h4><p>Export byobu profile settings.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-janitor.1.html">byobu-janitor</a></h4><p>Clean up stale byobu state and socket files.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-launch.1.html">byobu-launch</a></h4><p>Launch a new byobu session or attach to an existing one.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-launcher.1.html">byobu-launcher</a></h4><p>Shell script called at login to conditionally launch byobu.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-launcher-install.1.html">byobu-launcher-install</a></h4><p>Install the byobu launcher into the user's shell profile.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-launcher-uninstall.1.html">byobu-launcher-uninstall</a></h4><p>Remove the byobu launcher from the user's shell profile.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-layout.1.html">byobu-layout</a></h4><p>Save and restore byobu window and pane layouts.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-quiet.1.html">byobu-quiet</a></h4><p>Silence byobu's startup messages.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-reconnect-sockets.1.html">byobu-reconnect-sockets</a></h4><p>Reconnect GPG and SSH agent sockets inside a running session.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-screen.1.html">byobu-screen</a></h4><p>Run byobu with GNU Screen as the backend.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-select-backend.1.html">byobu-select-backend</a></h4><p>Choose between tmux and GNU Screen as the byobu backend.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-select-profile.1.html">byobu-select-profile</a></h4><p>Switch between byobu color profiles.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-select-session.1.html">byobu-select-session</a></h4><p>List and attach to named byobu sessions.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-shell.1.html">byobu-shell</a></h4><p>Launch a shell inside a byobu session.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-silent.1.html">byobu-silent</a></h4><p>Alias for byobu-quiet; suppress startup messages.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-status.1.html">byobu-status</a></h4><p>Run all enabled status scripts and print their output.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-status-detail.1.html">byobu-status-detail</a></h4><p>Show a detailed explanation of each active status indicator.</p></div>
+    <div class="status-item"><h4><a href="https://manpages.ubuntu.com/manpages/noble/man1/byobu-tmux.1.html">byobu-tmux</a></h4><p>Run byobu with tmux as the backend.</p></div>
+  </div>
+</section>
+</div>
+
+<!-- Support -->
+<section id="support">
+  <h2>Support</h2>
+  <p class="section-sub">Support for Byobu is largely a volunteer effort by the maintainer, advanced practitioners, and fellow users.</p>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>Bug Reports &amp; Issues</h3>
+      <p>Search and report bugs at <a href="https://github.com/dustinkirkland/byobu/issues">github.com/dustinkirkland/byobu/issues</a>. Please search existing issues before opening a new one.</p>
+    </div>
+    <div class="about-card">
+      <h3>Community Q&amp;A</h3>
+      <p>Ask questions and find answers on <a href="https://stackexchange.com/search?q=byobu">StackExchange</a>. Tag your question with <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg3);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">byobu</code> for visibility.</p>
+    </div>
+    <div class="about-card">
+      <h3>Source Code</h3>
+      <p>GPLv3 licensed, hosted on GitHub. Contributions via pull requests are welcome — please use tabs, not spaces.<br><br>
+      <code style="font-family:var(--mono);font-size:0.8rem;background:var(--bg3);padding:0.2rem 0.5rem;border-radius:4px;color:var(--accent);">git clone https://github.com/dustinkirkland/byobu.git</code></p>
+    </div>
+  </div>
+</section>
 
 <!-- About -->
 <section id="about">
