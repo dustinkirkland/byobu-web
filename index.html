@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Byobu — Text-based window manager &amp; terminal multiplexer</title>
+  <meta name="description" content="Byobu is a GPLv3 open source text-based window manager and terminal multiplexer with elegant keybindings, status notifications, and profile management for GNU Screen and tmux.">
+  <link rel="icon" type="image/svg+xml" href="byobu.svg">
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --accent:    #39d353;
+      --accent2:   #58a6ff;
+      --warn:      #f0883e;
+      --radius:    8px;
+      --mono:      'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --sans:      -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ─────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .nav-logo:hover { text-decoration: none; }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #000 !important;
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: opacity 0.15s;
+    }
+
+    .nav-cta:hover { opacity: 0.85; text-decoration: none !important; }
+
+    /* ── Sections ────────────────────────────────────────────────────── */
+    section { padding: 5rem 2rem; max-width: 960px; margin: 0 auto; }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 7rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge span { color: var(--accent); font-weight: 600; }
+
+    #hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 1.25rem;
+    }
+
+    #hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    #hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2.25rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-decoration: none !important;
+    }
+
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+
+    .hero-terminal {
+      margin-top: 4rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      width: 100%;
+      max-width: 620px;
+      line-height: 1.8;
+    }
+
+    .hero-terminal .tb { color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; letter-spacing: 1px; text-transform: uppercase; }
+    .hero-terminal .prompt { color: var(--accent); }
+    .hero-terminal .cmd { color: var(--text); }
+    .hero-terminal .out { color: var(--muted); }
+    .hero-terminal .status-bar {
+      margin-top: 0.75rem;
+      background: #1a3a1a;
+      border-radius: 4px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      display: flex;
+      justify-content: space-between;
+      color: #9be09b;
+      border: 1px solid #2a5a2a;
+    }
+    .hero-terminal .status-bar .sb-right { color: var(--muted); }
+
+    /* ── How it works / steps ─────────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .step h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .step p { color: var(--muted); font-size: 0.9rem; }
+
+    .step code {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      background: var(--bg3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* ── Features ─────────────────────────────────────────────────────── */
+    #features { background: var(--bg2); border-radius: var(--radius); }
+    #features > section { padding: 4rem 2rem; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feature {
+      padding: 1.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature h3 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+    .feature p { color: var(--muted); font-size: 0.875rem; }
+
+    /* ── Install ──────────────────────────────────────────────────────── */
+    .install-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      line-height: 2;
+      overflow-x: auto;
+    }
+
+    .code-block .comment { color: var(--muted); }
+    .code-block .dollar { color: var(--accent); user-select: none; }
+    .code-block .out { color: var(--muted); }
+
+    /* ── Keybindings ──────────────────────────────────────────────────── */
+    .kb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .kb-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .kb-group-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.75rem 1.25rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kb-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .kb-table tr:not(:last-child) td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kb-table td {
+      padding: 0.55rem 1.25rem;
+      font-size: 0.875rem;
+    }
+
+    .kb-table td:first-child {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      white-space: nowrap;
+      width: 1%;
+      padding-right: 1rem;
+    }
+
+    .kb-table td:last-child {
+      color: var(--muted);
+    }
+
+    /* ── Status notifications ─────────────────────────────────────────── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .status-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+
+    .status-item h4 {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .status-item p {
+      font-size: 0.825rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── About ────────────────────────────────────────────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .about-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .about-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .about-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a { color: var(--muted); font-size: 0.875rem; }
+    .footer-links a:hover { color: var(--text); text-decoration: none; }
+
+    .footer-copy { color: var(--muted); font-size: 0.8rem; width: 100%; }
+
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .nav-links li:not(:last-child) { display: none; }
+      section { padding: 3.5rem 1.25rem; }
+      #hero { padding: 6rem 1.25rem 3rem; }
+      footer { padding: 2rem 1.25rem; }
+      .kb-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <img src="byobu.svg" alt="" style="height:24px;width:24px;">byobu
+  </a>
+  <ul class="nav-links">
+    <li><a href="#install">Install</a></li>
+    <li><a href="#keybindings">Keybindings</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://github.com/dustinkirkland/byobu" class="nav-cta">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-badge"><span>GPLv3</span> Open source · Linux · BSD · macOS</div>
+  <h1>Your terminal,<br><em>beautifully enhanced.</em></h1>
+  <p>
+    Byobu is a text-based window manager and terminal multiplexer.
+    It wraps <a href="https://github.com/tmux/tmux/wiki">tmux</a> (or <a href="https://www.gnu.org/software/screen/">GNU Screen</a>)
+    with elegant keybindings, toggleable system status notifications,
+    profile management, and split-pane layouts — on any Linux, BSD, or Mac system.
+  </p>
+  <div class="hero-actions">
+    <a href="#install" class="btn btn-primary">Install byobu</a>
+    <a href="https://github.com/dustinkirkland/byobu" class="btn btn-secondary">View on GitHub</a>
+  </div>
+  <div class="hero-terminal">
+    <div class="tb">byobu status bar</div>
+    <div class="status-bar">
+      <span>0:bash&nbsp; 1:vim&nbsp; 2:ssh&nbsp; <strong style="background:#39d353;color:#000;padding:0 4px;border-radius:2px;">3:server</strong>&nbsp; 4:logs</span>
+      <span class="sb-right">Ubuntu 24.04&nbsp; 🔄 12!&nbsp; 4x&nbsp; 3.2GHz&nbsp; 42°C&nbsp; 2.1GB&nbsp; ▴128k ▾64k&nbsp; 12:34:56</span>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div><span class="prompt">$</span> <span class="cmd">sudo apt install byobu</span></div>
+      <div class="out">Reading package lists... Done</div>
+      <div class="out">Setting up byobu (6.11-0ubuntu2) ...</div>
+      <div><span class="prompt">$</span> <span class="cmd">byobu</span></div>
+      <div class="out" style="color:var(--accent);">Welcome to byobu — press F9 to configure</div>
+    </div>
+  </div>
+</section>
+
+<!-- Install -->
+<section id="install">
+  <h2>Install</h2>
+  <p class="section-sub">Available on all major package managers.</p>
+
+  <div class="install-tabs">
+    <button class="tab-btn active" onclick="showTab('apt')">apt (Ubuntu/Debian)</button>
+    <button class="tab-btn" onclick="showTab('brew')">Homebrew (macOS)</button>
+    <button class="tab-btn" onclick="showTab('src')">From source</button>
+  </div>
+
+  <div id="tab-apt" class="tab-panel active">
+    <div class="code-block">
+      <div class="comment"># Ubuntu, Debian, and derivatives</div>
+      <div><span class="dollar">$</span> sudo apt install byobu</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Launch byobu</div>
+      <div><span class="dollar">$</span> byobu</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Enable byobu at login (optional)</div>
+      <div><span class="dollar">$</span> byobu-enable</div>
+      <div class="out">byobu will be launched when you login.</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Select tmux or screen backend</div>
+      <div><span class="dollar">$</span> byobu-select-backend</div>
+    </div>
+  </div>
+
+  <div id="tab-brew" class="tab-panel">
+    <div class="code-block">
+      <div class="comment"># macOS with Homebrew (requires tmux)</div>
+      <div><span class="dollar">$</span> brew install tmux byobu</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Launch byobu</div>
+      <div><span class="dollar">$</span> byobu</div>
+      <div>&nbsp;</div>
+      <div class="comment"># macOS users may need to set TERM for F-key support</div>
+      <div class="comment"># Add to your ~/.zshrc or ~/.bash_profile:</div>
+      <div><span class="dollar">$</span> echo "alias ssh='TERM=vt100 ssh'" >> ~/.zshrc</div>
+    </div>
+  </div>
+
+  <div id="tab-src" class="tab-panel">
+    <div class="code-block">
+      <div class="comment"># Clone from GitHub</div>
+      <div><span class="dollar">$</span> git clone https://github.com/dustinkirkland/byobu.git</div>
+      <div><span class="dollar">$</span> cd byobu</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Generate configure script</div>
+      <div><span class="dollar">$</span> ./autogen.sh</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Configure (install to $HOME)</div>
+      <div><span class="dollar">$</span> ./configure --prefix="$HOME/byobu"</div>
+      <div><span class="dollar">$</span> make &amp;&amp; make install</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Update your PATH</div>
+      <div><span class="dollar">$</span> echo 'export PATH=$HOME/byobu/bin:$PATH' >> ~/.bashrc</div>
+      <div><span class="dollar">$</span> source ~/.bashrc</div>
+      <div>&nbsp;</div>
+      <div class="comment"># Run</div>
+      <div><span class="dollar">$</span> byobu</div>
+    </div>
+  </div>
+
+  <p style="margin-top:1.5rem; color:var(--muted); font-size:0.875rem;">
+    Dependencies: <a href="https://github.com/tmux/tmux/wiki">tmux</a> &ge; 1.5 and/or <a href="https://www.gnu.org/software/screen/">GNU Screen</a>.
+    Optionally <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg2);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">python-newt</code> for the configuration utility.
+    Byobu works on most Linux, BSD, and macOS distributions.
+  </p>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works">
+  <h2>How it works</h2>
+  <p class="section-sub">Byobu sits on top of tmux or GNU Screen, adding a polished layer of status, keybindings, and configuration.</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:2.5rem;overflow-x:auto;">
+    <pre style="font-family:var(--mono);font-size:0.82rem;line-height:1.7;color:var(--muted);margin:0;"><span style="color:var(--text);">  Your shell                              tmux / GNU Screen</span>
+  ┌──────────────────────────┐            ┌────────────────────────┐
+  │   bash / zsh / fish      │            │  window &amp; pane mgmt    │
+  │         + your app       │            │  scrollback (10k lines) │
+  └────────────┬─────────────┘            │  copy / paste modes    │
+               │  launches                └───────────┬────────────┘
+               ▼                                      │  backend
+  ┌──────────────────────────┐                        │
+  │         byobu            │◄───────────────────────┘
+  │                          │
+  │  • F-key keybindings     │
+  │  • status bar            │
+  │  • profile management    │
+  │  • configuration TUI     │
+  └──────────────────────────┘
+          <span style="color:var(--accent);">↑ your machine — no cloud, no telemetry, just your terminal</span></pre>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">Step 01</div>
+      <h3>Install</h3>
+      <p>Install via <code>apt</code>, <code>brew</code>, or from source. Byobu runs as a wrapper around your existing tmux or GNU Screen setup — no configuration required to get started.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 02</div>
+      <h3>Launch</h3>
+      <p>Run <code>byobu</code> from any terminal. Press <code>F9</code> to open the configuration menu, toggle status items on or off, switch backends, and customize your profile.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 03</div>
+      <h3>Enable at login</h3>
+      <p>Run <code>byobu-enable</code> to launch byobu automatically on every login. Run <code>byobu-disable</code> to turn this off. Select tmux or screen with <code>byobu-select-backend</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<div id="features" style="background:var(--bg2); margin: 0; padding: 0;">
+<section>
+  <h2>Everything your terminal deserves.</h2>
+  <p class="section-sub">A full-featured enhancement layer for tmux and GNU Screen — keybindings, status, splits, and more.</p>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feature-icon">⌨️</div>
+      <h3>F-key keybindings</h3>
+      <p>Intuitive function-key shortcuts for creating windows, splitting panes, scrolling, detaching, and more — no prefix key required. Press <strong>F1</strong> in-session for the full reference.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📊</div>
+      <h3>System status bar</h3>
+      <p>A rich two-line status bar at the bottom of your terminal shows CPU, memory, disk, network, battery, load, time, and more — all independently toggleable via <strong>F9</strong>.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🪟</div>
+      <h3>Window &amp; pane management</h3>
+      <p>Create, rename, reorder, and split windows into panes horizontally or vertically. Zoom a pane to full-screen with <strong>Shift-F11</strong>. Synchronize input across all panes with <strong>Alt-F9</strong>.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📜</div>
+      <h3>10,000-line scrollback</h3>
+      <p>Every window maintains up to 10,000 lines of scrollback history. Enter copy mode with <strong>F7</strong> or <strong>Alt-PgUp</strong>, select with spacebar, paste with <strong>Alt-Insert</strong>.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔌</div>
+      <h3>tmux &amp; GNU Screen backends</h3>
+      <p>Byobu supports both <a href="https://github.com/tmux/tmux/wiki">tmux</a> and <a href="https://www.gnu.org/software/screen/">GNU Screen</a> as backends. Switch anytime with <code>byobu-select-backend</code>. Defaults to tmux if present.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎨</div>
+      <h3>Profiles &amp; color themes</h3>
+      <p>Switch between built-in color profiles with <strong>Ctrl-Shift-F5</strong> for a random theme or <strong>Ctrl-Shift-F5</strong>/<strong>Shift-F5</strong> to cycle. Edit <code>~/.byobu/color.tmux</code> to customize.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔁</div>
+      <h3>Session persistence</h3>
+      <p>Detach from a session with <strong>F6</strong> and re-attach later — your windows, processes, and history survive. Use <code>byobu-select-session</code> to list and reconnect to named sessions.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🛠️</div>
+      <h3>Configuration TUI</h3>
+      <p>Press <strong>F9</strong> for an interactive menu to toggle status notifications, change keybinding sets, select profiles, and switch backends — no file editing required.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📐</div>
+      <h3>Layout save &amp; restore</h3>
+      <p>Save complex split-pane layouts with <strong>Ctrl-Shift-F8</strong> and restore them with <strong>Alt-Shift-F8</strong>. Define window sets in <code>~/.byobu/windows.tmux</code> for repeatable environments.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Keybindings -->
+<section id="keybindings">
+  <h2>Keybindings</h2>
+  <p class="section-sub">All keybindings work without a prefix key. Press <strong>F1</strong> inside byobu for the built-in cheat sheet. <strong>Shift-F12</strong> disables F-keys temporarily.</p>
+
+  <div class="kb-grid">
+    <div class="kb-group">
+      <div class="kb-group-title">Windows</div>
+      <table class="kb-table">
+        <tr><td>F2</td><td>Create a new window</td></tr>
+        <tr><td>F3</td><td>Move to previous window</td></tr>
+        <tr><td>F4</td><td>Move to next window</td></tr>
+        <tr><td>F8</td><td>Re-title / rename window</td></tr>
+        <tr><td>Ctrl-a k</td><td>Kill the current window</td></tr>
+        <tr><td>Ctrl-S-F2</td><td>Create a new session</td></tr>
+        <tr><td>Alt-Left / Alt-Right</td><td>Previous / next window</td></tr>
+        <tr><td>Alt-Up / Alt-Down</td><td>Switch to previous / next session</td></tr>
+        <tr><td>Ctrl-S-F3</td><td>Move window left</td></tr>
+        <tr><td>Ctrl-S-F4</td><td>Move window right</td></tr>
+      </table>
+    </div>
+
+    <div class="kb-group">
+      <div class="kb-group-title">Pane splits</div>
+      <table class="kb-table">
+        <tr><td>Shift-F2</td><td>Split pane horizontally</td></tr>
+        <tr><td>Ctrl-F2</td><td>Split pane vertically</td></tr>
+        <tr><td>Shift-F3</td><td>Focus previous split pane</td></tr>
+        <tr><td>Shift-F4</td><td>Focus next split pane</td></tr>
+        <tr><td>Shift-Up/Down/Left/Right</td><td>Focus pane in direction</td></tr>
+        <tr><td>Shift-F5</td><td>Join all splits into one window</td></tr>
+        <tr><td>Ctrl-F6</td><td>Kill / remove current split</td></tr>
+        <tr><td>Shift-F11</td><td>Zoom current pane (toggle)</td></tr>
+        <tr><td>Alt-F11</td><td>Break pane into its own window</td></tr>
+        <tr><td>Ctrl-F11</td><td>Join pane from adjacent window</td></tr>
+        <tr><td>Alt-F9</td><td>Synchronize input across all panes</td></tr>
+        <tr><td>Ctrl-F3 / Ctrl-F4</td><td>Swap pane left / right</td></tr>
+        <tr><td>Alt-Shift-Arrow</td><td>Resize current pane</td></tr>
+        <tr><td>Shift-F8</td><td>Cycle to next pane layout</td></tr>
+      </table>
+    </div>
+
+    <div class="kb-group">
+      <div class="kb-group-title">Session &amp; profile</div>
+      <table class="kb-table">
+        <tr><td>F5</td><td>Reload profile / refresh status</td></tr>
+        <tr><td>F6</td><td>Detach from session</td></tr>
+        <tr><td>Shift-F6</td><td>Detach, but do not logout</td></tr>
+        <tr><td>Alt-F6</td><td>Detach all other clients</td></tr>
+        <tr><td>F9</td><td>Open configuration menu</td></tr>
+        <tr><td>F12</td><td>Lock this terminal</td></tr>
+        <tr><td>Ctrl-F5</td><td>Reconnect GPG and SSH sockets</td></tr>
+        <tr><td>Alt-F5</td><td>Toggle UTF-8 support, reload</td></tr>
+        <tr><td>Shift-F5</td><td>Cycle through status lines</td></tr>
+        <tr><td>Ctrl-Shift-F5</td><td>Set a random background color</td></tr>
+        <tr><td>Ctrl-Shift-F8</td><td>Save current pane layout</td></tr>
+        <tr><td>Alt-Shift-F8</td><td>Restore a saved pane layout</td></tr>
+        <tr><td>Shift-F12</td><td>Disable all F-keybindings</td></tr>
+        <tr><td>Ctrl-a !</td><td>Toggle keybindings on/off</td></tr>
+        <tr><td>Ctrl-a R</td><td>Reload profile</td></tr>
+      </table>
+    </div>
+
+    <div class="kb-group">
+      <div class="kb-group-title">Scrollback &amp; copy</div>
+      <table class="kb-table">
+        <tr><td>F7</td><td>Enter copy / scrollback mode</td></tr>
+        <tr><td>Alt-PgUp</td><td>Enter scrollback mode (scroll up)</td></tr>
+        <tr><td>Alt-PgDn</td><td>Enter scrollback mode (scroll down)</td></tr>
+        <tr><td>Spacebar</td><td>Start selecting text (in copy mode)</td></tr>
+        <tr><td>Enter</td><td>Copy selected text (in copy mode)</td></tr>
+        <tr><td>Alt-Insert</td><td>Paste copied text</td></tr>
+        <tr><td>Ctrl-a ]</td><td>Paste copied text (screen mode)</td></tr>
+        <tr><td>Shift-F7</td><td>Save scrollback buffer to editor</td></tr>
+        <tr><td>Ctrl-a ~</td><td>Save scrollback buffer to file</td></tr>
+        <tr><td>Ctrl-a $</td><td>Show detailed status</td></tr>
+      </table>
+    </div>
+
+    <div class="kb-group">
+      <div class="kb-group-title">Send to panes</div>
+      <table class="kb-table">
+        <tr><td>Shift-F9</td><td>Send a command to all panes</td></tr>
+        <tr><td>Ctrl-F9</td><td>Send a command to all windows</td></tr>
+        <tr><td>Alt-F9</td><td>Toggle pane synchronization</td></tr>
+        <tr><td>F1</td><td>Show keybinding help (in new window)</td></tr>
+        <tr><td>Ctrl-Shift-F12</td><td>Mondrian square mosaic art</td></tr>
+        <tr><td>Alt-F12</td><td>Enable mouse mode</td></tr>
+        <tr><td>Alt-Insert</td><td>Paste buffer</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.875rem;">
+    Keybindings are defined in <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg2);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">/usr/share/byobu/keybindings/</code> and can be overridden per-user.
+    PuTTY users: set <em>Terminal → Keyboard → Function keys: Xterm R6</em> for F-key compatibility.
+    Apple Terminal users: set <em>Declare Terminal As: xterm-color</em> to fix flashing text.
+  </p>
+</section>
+
+<!-- Status notifications -->
+<div style="background:var(--bg2); margin: 0; padding: 0;">
+<section id="status">
+  <h2>Status notifications</h2>
+  <p class="section-sub">Byobu's status bar shows live system information across two lines at the bottom of your screen. Toggle each item on or off via <strong>F9 → Toggle status notifications</strong>.</p>
+
+  <div class="status-grid">
+    <div class="status-item">
+      <h4>cpu_freq</h4>
+      <p>Current CPU frequency in GHz. White text on light blue background.</p>
+    </div>
+    <div class="status-item">
+      <h4>cpu_temp</h4>
+      <p>CPU temperature in °C or °F. Configure <code>TEMP=F</code> in <code>statusrc</code> to switch units. Yellow on black.</p>
+    </div>
+    <div class="status-item">
+      <h4>cpu_count</h4>
+      <p>Number of CPUs or cores on the system, followed by a trailing 'x'.</p>
+    </div>
+    <div class="status-item">
+      <h4>load_average</h4>
+      <p>System load average over 1 minute (or 1/5/15 min with <code>LOAD_AVERAGES=3</code>). Black on yellow.</p>
+    </div>
+    <div class="status-item">
+      <h4>memory</h4>
+      <p>Total memory available and used percentage. White on green background.</p>
+    </div>
+    <div class="status-item">
+      <h4>swap</h4>
+      <p>Total swap space and percentage used. Black text on light green, trailing '%'.</p>
+    </div>
+    <div class="status-item">
+      <h4>disk</h4>
+      <p>Total disk space and used on /. White on light purple. Override mount with <code>MONITORED_DISK</code>.</p>
+    </div>
+    <div class="status-item">
+      <h4>disk_io</h4>
+      <p>Read/write throughput in kB/s or MB/s over 3 seconds. '◂' = read, '▸' = write (UTF-8), or '&lt;' / '&gt;' in ASCII mode.</p>
+    </div>
+    <div class="status-item">
+      <h4>network</h4>
+      <p>Instantaneous upload/download bandwidth in Gbps/Mbps/kbps. '▴' = up, '▾' = down. White on purple.</p>
+    </div>
+    <div class="status-item">
+      <h4>wifi_quality</h4>
+      <p>Wi-Fi connection rate and signal quality percentage. Black on cyan. Override interface with <code>MONITORED_NETWORK=wlan0</code>.</p>
+    </div>
+    <div class="status-item">
+      <h4>ip_address</h4>
+      <p>IPv4 address (or IPv6 with <code>IPV6=1</code>, external with <code>IP_EXTERNAL=1</code>). Bold black on grey.</p>
+    </div>
+    <div class="status-item">
+      <h4>battery</h4>
+      <p>Battery charge percentage with +/=/- charging indicators. Green/yellow/red by charge state.</p>
+    </div>
+    <div class="status-item">
+      <h4>updates_available</h4>
+      <p>Number of pending updates. '!' = regular, '!!' = security, '⚠' = dist-upgrade. White on red.</p>
+    </div>
+    <div class="status-item">
+      <h4>reboot_required</h4>
+      <p>'⟳' if reboot needed after update, '⚠' if unattended upgrade in progress, '🗹' if kernel is live-patched.</p>
+    </div>
+    <div class="status-item">
+      <h4>uptime</h4>
+      <p>Total system uptime since last boot. Blue text on grey background.</p>
+    </div>
+    <div class="status-item">
+      <h4>time</h4>
+      <p>System time in HH:MM:SS (customizable via <code>strftime</code> in <code>~/.byobu/datetime</code>).</p>
+    </div>
+    <div class="status-item">
+      <h4>date</h4>
+      <p>System date in YYYY-MM-DD format, or any <code>strftime</code> format you configure.</p>
+    </div>
+    <div class="status-item">
+      <h4>time_utc</h4>
+      <p>UTC time in HH:MM format. Dark text on light background.</p>
+    </div>
+    <div class="status-item">
+      <h4>hostname</h4>
+      <p>Hostname of the system. Bold black on grey, with leading '@' if whoami is also enabled.</p>
+    </div>
+    <div class="status-item">
+      <h4>whoami</h4>
+      <p>Username of the owner of the screen session. Bold black on grey in upper bar.</p>
+    </div>
+    <div class="status-item">
+      <h4>users</h4>
+      <p>Number of remote SSH users logged in. Red on grey, trailing '#'. Set <code>USERS_DISTINCT=1</code> to count unique users.</p>
+    </div>
+    <div class="status-item">
+      <h4>session</h4>
+      <p>Byobu session name (tmux only). Underlined black on white. Indicator '〣' in UTF-8 mode.</p>
+    </div>
+    <div class="status-item">
+      <h4>distro / release</h4>
+      <p>OS distribution name from <code>lsb_release</code> or <code>/etc/issue</code>. Bold black on grey. Configurable with <code>DISTRO=</code>.</p>
+    </div>
+    <div class="status-item">
+      <h4>packages</h4>
+      <p>Total number of installed packages in brackets '[xxx]'. Yellow on white.</p>
+    </div>
+    <div class="status-item">
+      <h4>processes</h4>
+      <p>Total number of running processes. White on dark yellow, trailing '&amp;'.</p>
+    </div>
+    <div class="status-item">
+      <h4>entropy</h4>
+      <p>System entropy pool size in bytes. Yellow on dark grey, leading 'e'.</p>
+    </div>
+    <div class="status-item">
+      <h4>fan_speed</h4>
+      <p>CPU or system fan speed in RPM (via lm-sensors). Black on grey, trailing 'rpm'.</p>
+    </div>
+    <div class="status-item">
+      <h4>services</h4>
+      <p>Monitor custom service list. Set <code>SERVICES="ssh|ssh apache2|http"</code> in <code>statusrc</code>. Cyan on white.</p>
+    </div>
+    <div class="status-item">
+      <h4>mail</h4>
+      <p>System mail indicator '⍌' (UTF-8) or '[M]' (ASCII) when new mail is waiting.</p>
+    </div>
+    <div class="status-item">
+      <h4>apport</h4>
+      <p>'{!}' symbol if there are pending crash reports. Black on orange background.</p>
+    </div>
+    <div class="status-item">
+      <h4>raid</h4>
+      <p>Prominently alerts on RAID failure in red blinking text. Shows rebuild percentage if resync in progress.</p>
+    </div>
+    <div class="status-item">
+      <h4>logo</h4>
+      <p>OS logo approximation at far left of lower bar. Customize with <code>LOGO=:-D</code> in <code>statusrc</code>.</p>
+    </div>
+    <div class="status-item">
+      <h4>arch</h4>
+      <p>System architecture (e.g. x86_64, aarch64) on the lower bar, default colors.</p>
+    </div>
+    <div class="status-item">
+      <h4>custom</h4>
+      <p>User-defined scripts in <code>~/.byobu/bin/</code>, named <code>N_NAME</code> where N is refresh interval in seconds. Output is shown in the status bar.</p>
+    </div>
+    <div class="status-item">
+      <h4>time_binary</h4>
+      <p>For the hardcore geek: local system time displayed in binary using UTF-8 block characters.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.875rem;">
+    Status scripts live in <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg2);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">/usr/lib/byobu/</code>.
+    Copy any script to <code style="font-family:var(--mono);font-size:0.82rem;background:var(--bg2);padding:0.1rem 0.35rem;border-radius:4px;color:var(--accent);">~/.byobu/</code> to customize it locally.
+    Use <strong>Ctrl-a $</strong> inside byobu to see a detailed explanation of each active status indicator.
+  </p>
+</section>
+</div>
+
+<!-- About -->
+<section id="about">
+  <h2>About</h2>
+  <p class="section-sub">The story behind the world's most elegant terminal multiplexer wrapper.</p>
+
+  <p style="color:var(--muted);line-height:1.8;max-width:680px;margin-bottom:1.5rem;">
+    <strong style="color:var(--text);">Byobu</strong> (屏風) is a Japanese word for a decorative, multi-paneled folding screen — a fitting name for a tool that adds beautiful structure to your terminal.
+    The project was originally created by <a href="https://github.com/dustinkirkland">Dustin Kirkland</a> to provide elegant enhancements to the otherwise functional, plain, practical GNU Screen for the Ubuntu server distribution.
+    Over time it has grown into a comprehensive terminal enhancement layer supporting both GNU Screen and the more modern tmux backend, running on virtually every Linux, BSD, and macOS system.
+  </p>
+
+  <p style="color:var(--muted);line-height:1.8;max-width:680px;margin-bottom:2rem;">
+    The project was first registered on Launchpad on <strong style="color:var(--text);">December 14, 2008</strong> under the name <em>screen-profiles</em> before being renamed to byobu.
+    It has since shipped in every Ubuntu release and dozens of other Linux distributions.
+    The codebase is primarily Shell and Python, GPLv3 licensed, and lives at
+    <a href="https://github.com/dustinkirkland/byobu">github.com/dustinkirkland/byobu</a>.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-num">2008</div>
+      <div class="stat-label">Founded</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1.6k</div>
+      <div class="stat-label">GitHub Stars</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">134</div>
+      <div class="stat-label">Forks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Releases</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">GPLv3</div>
+      <div class="stat-label">License</div>
+    </div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>Author &amp; Maintainer</h3>
+      <p>
+        <strong>Dustin Kirkland</strong> (<a href="mailto:kirkland@byobu.org">kirkland@byobu.org</a>)<br>
+        Emeritus contributors: Nick Barcet, Raphaël Pinson, Derek Carter.<br>
+        The project welcomes contributions via GitHub pull requests or Launchpad merge proposals. Please use tabs, not spaces.
+      </p>
+    </div>
+    <div class="about-card">
+      <h3>Backends</h3>
+      <p>
+        Byobu defaults to <strong>tmux</strong> when available. Switch backends at any time with <code>byobu-select-backend</code>.
+        The tmux backend supports full UTF-8 Unicode status icons; the screen backend uses ASCII fallbacks.
+        Both support the full F-key keybinding set.
+      </p>
+    </div>
+    <div class="about-card">
+      <h3>Configuration</h3>
+      <p>
+        User configuration lives in <code>$HOME/.byobu/</code> (or <code>$XDG_CONFIG_HOME/byobu</code> if set).
+        Key files: <code>statusrc</code> (toggle status items), <code>color.tmux</code> (colors),
+        <code>windows.tmux</code> (startup windows), <code>datetime</code> (date/time format).
+      </p>
+    </div>
+    <div class="about-card">
+      <h3>Window startup scripts</h3>
+      <p>
+        Define named window sets in <code>~/.byobu/windows.tmux.NAME</code> and launch them with
+        <code>BYOBU_WINDOWS=NAME byobu</code>. Supports full tmux syntax for splits,
+        named panes, and startup commands — a powerful way to recreate your workspace instantly.
+      </p>
+    </div>
+    <div class="about-card">
+      <h3>Sessions</h3>
+      <p>
+        Byobu names sessions "byobu" by default. To hide a session from <code>byobu-select-session</code>,
+        prepend a dot: <code>byobu -S .hidden</code>. Sessions survive disconnects; re-attach with
+        <code>byobu</code> or <code>byobu-select-session</code>.
+      </p>
+    </div>
+    <div class="about-card">
+      <h3>Units of measure</h3>
+      <p>
+        Byobu uses <strong>binary</strong> (multiples of 1024) for memory and disk capacity per JEDEC Standard 100B.01,
+        and <strong>decimal</strong> (multiples of 1000) for network data transfer rates per standard data rate conventions.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">byobu</div>
+  <div class="footer-links">
+    <a href="https://github.com/dustinkirkland/byobu">GitHub</a>
+    <a href="https://launchpad.net/byobu">Launchpad</a>
+    <a href="https://github.com/dustinkirkland/byobu/issues">Issues</a>
+    <a href="https://github.com/tmux/tmux/wiki">tmux</a>
+    <a href="https://www.gnu.org/software/screen/">GNU Screen</a>
+    <a href="https://github.com/dustinkirkland/byobu/blob/master/COPYING">GPLv3 License</a>
+  </div>
+  <div class="footer-copy">
+    &copy; 2008&ndash;2026 Dustin Kirkland &lt;<a href="mailto:kirkland@byobu.org">kirkland@byobu.org</a>&gt;.
+    Byobu is GPLv3 open source software.
+    Originally created for Ubuntu; works on most Linux, BSD, and macOS distributions.
+    The name <em>byobu</em> (屏風) means "a decorative, multi-paneled screen" in Japanese.
+  </div>
+</footer>
+
+<script>
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
